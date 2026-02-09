@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-black min-h-screen text-white pb-16 lg:pb-0">
+  <div class="bg-black min-h-screen text-white" :class="{ 'pb-16 lg:pb-0': !$route.meta.hideBottomNav }">
     <WelcomeScreen v-if="showWelcome" @finish="handleWelcomeFinish" />
     <div v-else>
       <LoadingOverlay :is-loading="isLoading" />
       <router-view :key="$route.fullPath" />
-      <BottomNav @open-menu="handleOpenMenu" />
+      <BottomNav v-if="!$route.meta.hideBottomNav" @open-menu="handleOpenMenu" />
     </div>
   </div>
 </template>

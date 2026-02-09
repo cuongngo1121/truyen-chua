@@ -68,15 +68,45 @@
 
         <!-- Chapters List -->
         <div v-if="chapters && chapters.length > 0" class="bg-gray-900/50 rounded-xl p-6">
-          <h2 class="text-2xl font-bold mb-6">Danh Sách Chương ({{ chapters.length }} chương)</h2>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Danh Sách Chương</h2>
+            <button 
+              @click="toggleSort"
+              class="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+              {{ sortOrder === 'asc' ? 'Cũ nhất' : 'Mới nhất' }}
+            </button>
+          </div>
+
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             <button
-              v-for="(chapter, index) in chapters"
+              v-for="(chapter, index) in displayedChapters"
               :key="chapter._id || index"
               @click="readChapter(chapter)"
-              class="px-4 py-3 bg-white/5 hover:bg-orange-500 border border-white/10 hover:border-orange-500 rounded-lg text-center text-sm font-semibold transition-all"
+              class="px-4 py-3 bg-white/5 hover:bg-orange-500 border border-white/10 hover:border-orange-500 rounded-lg text-center text-sm font-semibold transition-all truncate"
+              :title="chapter.chapter_name"
             >
-              {{ chapter.chapter_name || `Chương ${index + 1}` }}
+              {{ chapter.chapter_name.includes('Chương') ? chapter.chapter_name : `Chương ${chapter.chapter_name}` }}
+            </button>
+          </div>
+
+          <div v-if="chapters.length > 24" class="mt-6 text-center">
+            <button 
+              @click="isExpanded = !isExpanded"
+              class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full font-medium transition-all text-sm inline-flex items-center gap-2"
+            >
+              <span v-if="!isExpanded">Xem thêm {{ chapters.length - 24 }} chương</span>
+              <span v-else>Thu gọn</span>
+              <svg 
+                class="w-4 h-4 transition-transform duration-300" 
+                :class="{ 'rotate-180': isExpanded }"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
           </div>
         </div>
@@ -92,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useComicStore } from '../stores/comicStore'
 import NavBar from '../components/NavBar.vue'
@@ -104,6 +134,27 @@ const comicStore = useComicStore()
 const loading = ref(true)
 const comic = ref(null)
 const chapters = ref([])
+const sortOrder = ref('asc') // 'asc' = Oldest->Newest, 'desc' = Newest->Oldest
+const isExpanded = ref(false)
+
+const displayedChapters = computed(() => {
+  let sorted = [...chapters.value]
+  
+  // chapters are typically 1->End by default from API (based on our previous fix)
+  // If user wants 'desc' (Mới nhất), we reverse
+  if (sortOrder.value === 'desc') {
+    sorted.reverse()
+  }
+  
+  if (!isExpanded.value) {
+    return sorted.slice(0, 24)
+  }
+  return sorted
+})
+
+const toggleSort = () => {
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+}
 
 const getImageUrl = (comic) => {
   if (comic.thumb_url) {

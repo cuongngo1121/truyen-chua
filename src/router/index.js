@@ -31,6 +31,7 @@ const routes = [
         path: "/doc-truyen/:slug",
         name: "ComicReader",
         component: () => import("../views/ComicReader.vue"),
+        meta: { hideBottomNav: true }
     },
     {
         path: "/tim-kiem",

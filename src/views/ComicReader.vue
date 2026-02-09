@@ -49,28 +49,37 @@
         </div>
 
         <!-- Chapter Navigation -->
-        <div class="bg-gray-900 p-6 flex flex-wrap items-center justify-center gap-4 sticky bottom-0">
+        <div class="bg-gray-900/95 backdrop-blur-xl p-4 flex items-center justify-between gap-4 sticky bottom-0 border-t border-white/10">
           <button
-            v-if="hasPrevChapter"
             @click="goToPrevChapter"
-            class="btn-secondary px-6 py-3 rounded-lg font-bold"
+            :disabled="!hasPrevChapter"
+            class="btn-secondary w-12 h-12 flex items-center justify-center rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="{ 'opacity-0 pointer-events-none': !hasPrevChapter }"
           >
-            ← Chương trước
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
           
           <router-link
             :to="`/truyen-tranh/${$route.params.slug}`"
-            class="btn-secondary px-6 py-3 rounded-lg font-bold"
+            class="flex-1 btn-secondary py-3 rounded-lg font-bold flex items-center justify-center gap-2"
           >
-            Danh sách chương
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span class="hidden md:inline">Danh sách chương</span>
           </router-link>
 
           <button
-            v-if="hasNextChapter"
             @click="goToNextChapter"
-            class="btn-primary px-6 py-3 rounded-lg font-bold"
+            :disabled="!hasNextChapter"
+            class="btn-primary w-12 h-12 flex items-center justify-center rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="{ 'opacity-0 pointer-events-none': !hasNextChapter }"
           >
-            Chương sau →
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
       </div>
